@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { HashRouter, Route } from "react-router-dom";
+import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
 
 import Login from "./modules/login";
+import Join from "./modules/join";
 
 import logo from "./logo.svg";
 import "./App.css";
@@ -16,7 +17,11 @@ class App extends Component {
         </header>
 
         <HashRouter>
-          <Route path="/login" component={Login} />
+          <Switch>
+            <Route path="/login" component={Login} Redirect />
+            <Route path="/join" component={Join} />
+            <Redirect from="/" to="/login" />
+          </Switch>
         </HashRouter>
       </div>
     );
