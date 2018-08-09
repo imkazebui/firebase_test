@@ -1,5 +1,5 @@
 import { combineReducers } from "redux";
-import { authReducer } from "./auth";
+import authReducer from "./auth";
 import roomReducer from "./room";
 
 export default combineReducers({

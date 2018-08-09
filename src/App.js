@@ -6,23 +6,27 @@ import Login from "./modules/login";
 import Join from "./modules/join";
 
 import logo from "./logo.svg";
-import "./connect(null, dispatch => ({dispatch}))(App).css";
+import "./App.css";
 
 import { firebaseAuth } from "./firebase";
+
+import { login, setStartState } from "./action/auth";
 
 class App extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     firebaseAuth.onAuthStateChanged(user => {
       if (user) {
-        // console.log(user)
+        console.log("has user");
         const name = user.displayName ? user.displayName : user.email;
         dispatch(login(user.uid, name));
-        dispatch(setStartState());
-        // if (history.location.pathname === "/") {
-        //   history.push("/join");
-        // }
+
+        // dispatch(setStartState());
+        if (window.location.href.indexOf("login") !== -1) {
+          window.location.href = "http://localhost:3000/#/join";
+        }
       } else {
+        console.log("there is no user");
         // dispatch(logout());
         // store.dispatch(clearState);
         // renderApp();
@@ -35,7 +39,7 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
+          <h1 className="App-title">Welcome to Chat</h1>
         </header>
 
         <HashRouter>

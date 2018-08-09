@@ -1,8 +1,12 @@
-export const auth = (state = {}, { type, data }) => {
-  switch (type) {
+export default (state = {}, action) => {
+  switch (action.type) {
     case "LOGIN":
-      return "hello";
-
+      return {
+        uid: action.uid,
+        displayName: action.displayName
+      };
+    case "LOGOUT":
+      return {};
     default:
       return state;
   }

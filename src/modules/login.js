@@ -33,12 +33,12 @@ const uiConfig = {
         }
       });
 
-      return true;
+      return false;
     }
   },
 
   signInFlow: "popup",
-  signInSuccessUrl: "http://localhost:3000/#/join",
+  // signInSuccessUrl: "http://localhost:3000/#/join",
   signInOptions: [
     {
       provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
