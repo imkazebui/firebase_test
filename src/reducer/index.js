@@ -4,5 +4,5 @@ import roomReducer from "./room";
 
 export default combineReducers({
   auth: authReducer,
-  room: roomReducer
+  rooms: roomReducer
 });

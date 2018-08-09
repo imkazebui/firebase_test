@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 
 import Login from "./modules/login";
 import Join from "./modules/join";
+import Room from "./modules/room";
 
 import logo from "./logo.svg";
 import "./App.css";
@@ -23,7 +24,7 @@ class App extends Component {
 
         // dispatch(setStartState());
         if (window.location.href.indexOf("login") !== -1) {
-          window.location.href = "http://localhost:3000/#/join";
+          window.location.href = "#/join";
         }
       } else {
         console.log("there is no user");
@@ -46,6 +47,7 @@ class App extends Component {
           <Switch>
             <Route path="/login" component={Login} Redirect />
             <Route path="/join" component={Join} />
+            <Route path="/room/:id" component={Room} />
             <Redirect from="/" to="/login" />
           </Switch>
         </HashRouter>
