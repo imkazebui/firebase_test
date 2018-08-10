@@ -16,3 +16,5 @@ export default firebase;
 export const firebaseAuth = firebase.auth();
 
 export const firebaseDatabase = firebase.database();
+
+export const firebaseStorage = firebase.storage();

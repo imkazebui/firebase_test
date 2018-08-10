@@ -1,5 +1,9 @@
 import moment from "moment";
-import { firebaseDatabase as database } from "../firebase";
+import {
+  firebaseDatabase as database,
+  firebaseAuth,
+  firebaseStorage
+} from "../firebase";
 
 export const createRoom = ({ id, name, people, messages = [] }) => ({
   type: "CREATE_ROOM",
@@ -242,4 +246,32 @@ export const startJoinRoom = (data = {}, showJoinError) => {
       }
     });
   };
+};
+
+export const sendImageAct = (file, roomName) => dispatch => {
+  return dispatch(startSendMessage("sendImage", roomName))
+    .then(function(messageRef) {
+      // 2 - Upload the image to Cloud Storage.
+      var filePath =
+        firebaseAuth.currentUser.uid + "/" + messageRef.key + "/" + file.name;
+      return firebaseStorage
+        .ref(filePath)
+        .put(file)
+        .then(function(fileSnapshot) {
+          // 3 - Generate a public URL for the file.
+          return fileSnapshot.ref.getDownloadURL().then(url => {
+            // 4 - Update the chat message placeholder with the image's URL.
+            return messageRef.update({
+              imageUrl: url,
+              storageUri: fileSnapshot.metadata.fullPath
+            });
+          });
+        });
+    })
+    .catch(function(error) {
+      console.error(
+        "There was an error uploading a file to Cloud Storage:",
+        error
+      );
+    });
 };

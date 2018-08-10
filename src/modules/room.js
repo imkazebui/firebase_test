@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { Row, Col, Button, Input } from "reactstrap";
 
-import { startSendMessage } from "../action/room";
+import { startSendMessage, sendImageAct } from "../action/room";
 import moment from "moment";
 
 class Room extends React.Component {
@@ -35,6 +35,8 @@ class Room extends React.Component {
         </p>
       );
       const text = <p className="message__text">{message.text}</p>;
+      const image = message.imageUrl ? <img src={message.imageUrl} /> : null;
+      console.log("message", message);
       // console.log(prevSender, messages[key].sender.displayName)
       if (message.status) {
         a.push(
@@ -49,6 +51,7 @@ class Room extends React.Component {
           <Row key={message.id} className="message">
             {time}
             {text}
+            {image}
           </Row>
         );
       } else {
@@ -58,6 +61,7 @@ class Room extends React.Component {
             {name}
             {time}
             {text}
+            {image}
           </Row>
         );
       }
@@ -66,14 +70,14 @@ class Room extends React.Component {
     return a;
   };
 
+  sendImage = ({ target }) => {
+    this.props.dispatch(sendImageAct(target.files[0], this.props.roomName));
+    console.log("file", target.files[0]);
+  };
+
   render() {
     return (
       <Col>
-        <Row>
-          <Button>View profile</Button>
-          Room name
-          <Button>Leave room</Button>
-        </Row>
         <Row>
           <Col>{this.displayMessages(this.props.messages)}</Col>
           {
@@ -87,6 +91,9 @@ class Room extends React.Component {
         <Row>
           <Input id="input-message" placeholder="send message" />
           <Button onClick={this.onSend}>Send</Button>
+        </Row>
+        <Row>
+          <Input type="file" onChange={this.sendImage} />
         </Row>
       </Col>
     );
