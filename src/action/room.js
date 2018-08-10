@@ -89,8 +89,8 @@ export const startListening = roomName => {
               dispatch(orderRoomsStartState());
               if (message.sender.displayName !== getState().auth.displayName) {
                 // ipcRenderer.send('playNotif', message.sender.displayName, message.text);
-                const audio = new Audio("/sounds/notif.mp3");
-                audio.play();
+                // const audio = new Audio("/sounds/notif.mp3");
+                // audio.play();
               }
               const keyword =
                 message.status && message.text.split(" ").splice(-1, 1)[0];
@@ -182,3 +182,64 @@ export const clearUnread = (roomName, uid, time, unread) => ({
   time,
   unread
 });
+
+export const startJoinRoom = (data = {}, showJoinError) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    return database.ref(`rooms/${data.roomName}`).once("value", snapshot => {
+      const value = snapshot.val();
+      const id = data.id;
+      if (value === null) {
+        return showJoinError("Room not found!");
+      } else if (value.people && value.people[id]) {
+        window.location.href = `#/room/${data.roomName}`;
+      } else {
+        dispatch(startListening(data.roomName));
+        const person = {
+          name: data.name,
+          id: data.id,
+          unread: data.unread,
+          lastRead: 0
+        };
+        let people = [];
+        let messages = [];
+        for (var key in value.people) {
+          people.push({
+            id: value.people[key].id,
+            name: value.people[key].name,
+            unread: value.people[key].unread,
+            lastRead: value.people[key].lastRead
+          });
+        }
+        for (var key in value.messages) {
+          messages.push({
+            ...value.messages[key]
+          });
+        }
+        return database
+          .ref(`rooms/${data.roomName}/people/${person.id}`)
+          .set(person)
+          .then(ref => {
+            database
+              .ref(`users/${person.id}/rooms/${data.roomName}`)
+              .set({ roomName: data.roomName });
+
+            dispatch(
+              createRoom({
+                people: [...people, person],
+                name: data.roomName,
+                messages
+              })
+            );
+            const perName = person.name;
+
+            dispatch(
+              startSendMessage(`${perName} joined`, data.roomName, true)
+            );
+
+            window.location.href = `#/room/${data.roomName}`;
+          });
+      }
+    });
+  };
+};

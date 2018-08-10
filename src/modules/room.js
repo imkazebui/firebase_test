@@ -14,6 +14,7 @@ class Room extends React.Component {
     }
 
     this.props.dispatch(startSendMessage(message, this.props.roomName));
+    document.getElementById("input-message").value = "";
   };
 
   displayMessages = () => {

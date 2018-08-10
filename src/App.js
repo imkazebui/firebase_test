@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
+import { Button } from "reactstrap";
 
 import Login from "./modules/login";
 import Join from "./modules/join";
@@ -11,7 +12,7 @@ import "./App.css";
 
 import { firebaseAuth } from "./firebase";
 
-import { login, setStartState } from "./action/auth";
+import { login, setStartState, startLogout } from "./action/auth";
 
 class App extends Component {
   componentDidMount() {
@@ -28,6 +29,7 @@ class App extends Component {
         }
       } else {
         console.log("there is no user");
+        window.location.href = "#/login";
         // dispatch(logout());
         // store.dispatch(clearState);
         // renderApp();
@@ -39,8 +41,16 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+          <img
+            src={logo}
+            className="App-logo"
+            alt="logo"
+            onClick={e => (window.location.href = "#/join")}
+          />
           <h1 className="App-title">Welcome to Chat</h1>
+          <Button onClick={() => this.props.dispatch(startLogout())}>
+            Logout
+          </Button>
         </header>
 
         <HashRouter>

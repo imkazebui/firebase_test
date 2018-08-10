@@ -1,7 +1,7 @@
 import React from "react";
 import { Row, Col, Button, Input } from "reactstrap";
 import { connect } from "react-redux";
-import { startCreateRoom } from "../action/room";
+import { startCreateRoom, startJoinRoom } from "../action/room";
 
 class Join extends React.Component {
   constructor(props) {
@@ -26,6 +26,19 @@ class Join extends React.Component {
     );
   };
 
+  joinRoom = () => {
+    const user = this.props.auth;
+    const data = {
+      roomName: document.getElementById("input-join-room").value.trim(),
+      id: user.uid,
+      name: user.displayName,
+      unread: 0
+    };
+    this.props.dispatch(
+      startJoinRoom(data, () => alert("Room name not available!"))
+    );
+  };
+
   render() {
     return (
       <Row>
@@ -38,8 +51,8 @@ class Join extends React.Component {
           </Row>
           <Row>
             Join a room
-            <Input placeholder="Enter room name" />
-            <Button>Join</Button>
+            <Input placeholder="Enter room name" id="input-join-room" />
+            <Button onClick={this.joinRoom}>Join</Button>
           </Row>
         </Col>
       </Row>
