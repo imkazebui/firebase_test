@@ -144,7 +144,12 @@ export const startListening = roomName => {
   };
 };
 
-export const startSendMessage = (text, roomName, status = false) => {
+export const startSendMessage = (
+  text,
+  roomName,
+  status = false,
+  imgObj = {}
+) => {
   return (dispatch, getState) => {
     const user = getState().auth;
     if (user) {
@@ -154,7 +159,8 @@ export const startSendMessage = (text, roomName, status = false) => {
         sender: { uid, displayName },
         text,
         createdAt: moment().format(),
-        status
+        status,
+        ...imgObj
       };
       return database.ref(`rooms/${roomName}/messages`).push(message);
     }
@@ -249,29 +255,22 @@ export const startJoinRoom = (data = {}, showJoinError) => {
 };
 
 export const sendImageAct = (file, roomName) => dispatch => {
-  return dispatch(startSendMessage("sendImage", roomName))
-    .then(function(messageRef) {
-      // 2 - Upload the image to Cloud Storage.
-      var filePath =
-        firebaseAuth.currentUser.uid + "/" + messageRef.key + "/" + file.name;
-      return firebaseStorage
-        .ref(filePath)
-        .put(file)
-        .then(function(fileSnapshot) {
-          // 3 - Generate a public URL for the file.
-          return fileSnapshot.ref.getDownloadURL().then(url => {
-            // 4 - Update the chat message placeholder with the image's URL.
-            return messageRef.update({
-              imageUrl: url,
-              storageUri: fileSnapshot.metadata.fullPath
-            });
-          });
-        });
-    })
-    .catch(function(error) {
-      console.error(
-        "There was an error uploading a file to Cloud Storage:",
-        error
-      );
+  // 2 - Upload the image to Cloud Storage.
+  var filePath =
+    firebaseAuth.currentUser.uid + "/" + roomName + "/" + file.name;
+  return firebaseStorage
+    .ref(filePath)
+    .put(file)
+    .then(function(fileSnapshot) {
+      // 3 - Generate a public URL for the file.
+      return fileSnapshot.ref.getDownloadURL().then(url => {
+        // 4 - Update the chat message placeholder with the image's URL.
+        return dispatch(
+          startSendMessage("sendImage", roomName, false, {
+            imageUrl: url,
+            storageUri: fileSnapshot.metadata.fullPath
+          })
+        );
+      });
     });
 };
